@@ -103,7 +103,7 @@ def begin_update(bus, fw_size: int, fw_crc: int):
     payload += struct.pack("<I", fw_size)
     payload += struct.pack("<I", fw_crc)
     send_fd(bus, bytes(payload))
-    wait_resp(bus, CMD_BEGIN_UPDATE, timeout=15.0)
+    wait_resp(bus, CMD_BEGIN_UPDATE, timeout=60.0)
 
 
 def send_data_block(bus, seq: int, offset: int, chunk32: bytes):
@@ -117,7 +117,7 @@ def send_data_block(bus, seq: int, offset: int, chunk32: bytes):
     payload += chunk32
 
     send_fd(bus, bytes(payload))
-    wait_resp(bus, CMD_DATA_32B, expected_seq=seq, timeout=1.0)
+    wait_resp(bus, CMD_DATA_32B, expected_seq=seq, timeout=3.0)
 
 
 def end_update(bus):
@@ -208,7 +208,7 @@ def flash_firmware(bus, fw_padded: bytes, fw_size: int, fw_crc: int):
         seq = i & 0xFFFF
 
         send_data_block(bus, seq, offset, chunk)
-
+        time.sleep(0.002)
         if i % 50 == 0 or i == total_blocks - 1:
             percent = 100.0 * (i + 1) / total_blocks
             print(f"\rProgreso: {percent:6.2f}%", end="", flush=True)
