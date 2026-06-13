@@ -1,0 +1,21 @@
+En la aplicación principal debes ajustar también el vector table.
+
+Opción recomendada en system_stm32h7xx.c:
+
+1) Busca estas líneas o equivalentes:
+
+#define VECT_TAB_OFFSET  0x00000000U
+
+2) Cámbialo a:
+
+#define VECT_TAB_OFFSET  0x00020000U
+
+3) Si tu system_stm32h7xx.c usa USER_VECT_TAB_ADDRESS, deja activo FLASH como base y offset 0x00020000U.
+
+También puedes agregar al inicio de main(), antes de inicializar periféricos:
+
+SCB->VTOR = 0x08020000U;
+__DSB();
+__ISB();
+
+Pero lo más limpio es corregir system_stm32h7xx.c para que no vuelva a colocar VTOR en 0x08000000.
